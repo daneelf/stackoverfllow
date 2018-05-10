@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    
+    <!-- dataTables plugin CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
+    
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+    
+    <!-- HighCharts plugin -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    
+    <!-- dataTables plugin -->
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    
+
+
+    <title>Stack Overflow Questions</title>
+  </head>
+  <body>
+    <script>
+      $(document).ready(function(){
+
+        $('#myTable').DataTable(
+          {
+            scrollY: 500,
+            //ordering:false
+          }
+        );
+        // Build the chart
+    Highcharts.chart('statistics', {
+    chart: {
+        plotBackgroundColor: null,
+        plotBorderWidth: null,
+        plotShadow: false,
+        type: 'pie'
+    },
+    title: {
+   
+        text: '{{ fromDate }} - {{ today }}'
+    },
+    tooltip: {
+        pointFormat: '{series.name}: <b>{point.y}</b>'
+    },
+    plotOptions: {
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: false
+            },
+            showInLegend: true
+        }
+    },
+    series: [{
+        name: 'count',
+        colorByPoint: true,
+        data: [{
+            name: 'number of questions',
+            y:{{ number_of_questions }},
+            sliced: true,
+            selected: true
+        },
+        {
+          name:'number of answered questions',
+          y:{{number_of_answered_questions}},        
+        },
+        {
+          name:'average number of views',
+          y:{{average_number_of_views}}
+        },
+        {
+          name:'average number of answers',
+          y:{{average_number_of_answers}}
+        }
+        ]
+    }]
+}); 
+
+ });
+</script>
+
+<div class="container">
+    <div class="row">
+      <h1>Stack Overflow Questions</h1>
+    </div>
+    <div class="pull-right">Statistics for {{ fromDate }} - {{ today }}</div>
+    
+    <hr>
+
+
+
+<div class="row">
+
+   <div class="col-md-8">
+      <table id="myTable" class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Owner</th>
+            <th scope="col">Title</th>
+            <th scope="col">Creation date</th>
+            <th scope="col">Is answered</th>
+            <th scope="col">View count</th>
+            <th scope="col">Score</th>
+            <!--<th scope="col">Link</th>-->
+          </tr>
+        </thead>
+        <tbody>
+            {% for d in data %}
+          <tr>
+            <td>{{ d.owner }}</td>
+            <td><a href="{{ d.link }}" target="blank">{{ d.title }}</a></td>
+            <td>{{ d.creation_date }}</td>
+            <td>{{ d.is_answered|yesno:"yes,no" }}</td>
+            <td>{{ d.view_count }}</td>
+            <td>{{ d.score }}</td>
+            <!--<td><a href="{{ d.link }}" target="blank">{{ d.link }}</a></td>    -->
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>  
+    </div>
+
+
+    <div class="col-md-4">
+        
+        <div id="statistics" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
+
+      <div class="container">
+         
+        <div class="list-group">
+          <a href="#" class="list-group-item list-group-item-action">Number of questions <span class="badge badge-primary">{{ number_of_questions }}</span></a>
+          <a href="#" class="list-group-item list-group-item-action">Number of answered questions <span class="badge badge-primary">{{ number_of_answered_questions }}</span></a>
+          <a href="#" class="list-group-item list-group-item-action">Average number of views <span class="badge badge-primary">{{ average_number_of_views }}</span></a>
+          <a href="#" class="list-group-item list-group-item-action">Average number of answers <span class="badge badge-primary">{{ average_number_of_answers }}</span></a>
+        </div>
+        </div>
+
+</div>
+</div>
+  </body>
+</html>
